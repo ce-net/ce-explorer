@@ -26,7 +26,7 @@
    npm run dev
    ```
 
-   Open the printed URL (default `http://localhost:5290`). In dev, Vite proxies `/ce-node` to the node, so you don't depend on the node sending permissive CORS headers. The explorer is read-only and needs no API token.
+   Open the printed URL (default `http://localhost:5290`). The data path is the mesh-native, **same-origin** rail: `@ce-net/sdk`'s `connectNode()` uses the in-tab `window.__ceNode` bridge if present, else the same-origin `/ce` reverse proxy. In dev, Vite stands in for the `ce-app serve` layer and proxies `/ce` to the node, so the browser stays same-origin under the strict CSP (`connect-src 'self'`) with no CORS and no off-origin hop. The explorer is read-only and needs no API token.
 
    If the node isn't running you'll get a clear empty/error state ("Can't reach the node. Is `ce start` running?") rather than a blank screen — start the node and it fills in live.
 
@@ -39,9 +39,17 @@ npm test        # vitest: unit tests for the data model, store/runtime, formatti
 
 The unit tests use a small in-memory adapter (`src/lib/__tests__/fixtures.ts`) so they exercise the real mapping, sync/op, money/size formatting, and error-handling logic with the SDK and network mocked — the production data path itself is never faked.
 
-## Production build
+## Serve & expose over the mesh
 
-`npm run build` emits a static `dist/`. Serve it behind anything that reverse-proxies `/ce-node` to your node's `:8844`, or set `VITE_CE_NODE_URL` (see `.env.example`) to a directly reachable node URL.
+`npm run build` emits a static `dist/`. Host it the mesh-native way — strict CSP + the same-origin bridge + a same-origin `/ce` reverse proxy, all injected for you — with **ce-app**:
+
+```bash
+ce-app register                     # claim this app's name on-chain + advertise (no hub)
+ce-app serve                        # build + host locally under the strict CSP, /ce -> 127.0.0.1:8844
+ce-app expose --domain ce-explorer  # serve over https://ce-explorer.user.ce-net.com via mesh ingress
+```
+
+A served ce-explorer talks ONLY to its local node (same-origin). For advanced/embedded setups you may still point it at a specific node by setting `VITE_CE_NODE_URL` at build time (see `.env.example`) — this is an explicit override, not the default.
 
 ## Layout
 

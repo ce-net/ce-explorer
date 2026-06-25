@@ -1,9 +1,9 @@
 /* ce-explorer — "bathypelagic instrument panel"
    A deep-sea sonar console for watching the CE mesh breathe.
    Palette is layered abyss teals with two functional accents (foam-cyan = alive,
-   amber = value) plus coral for burn/error — deliberately not the AI defaults. */
-
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
+   amber = value) plus coral for burn/error — deliberately not the AI defaults.
+   Type resolves from the system font stack (see --display/--body/--mono below):
+   no off-origin webfont is fetched, so the strict CSP (connect-src 'self') holds. */
 
 :root {
   --abyss: #071a22;
